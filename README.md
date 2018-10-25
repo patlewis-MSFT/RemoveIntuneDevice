@@ -9,7 +9,7 @@ This is particularly useful if a user has been deleted from AAD without first de
 
 ## Prerequisites
 * The Azure Active Directory recycle bin must be enabled before deleting a device from a deleted user: https://docs.microsoft.com/en-us/azure/active-directory/hybrid/how-to-connect-sync-recycle-bin
-* The logged on user must have the appropriate Graph permissions setup in Intune prior to running the script 
+* The logged on user must have the appropriate Graph permissions setup in Intune prior to running the script: https://docs.microsoft.com/en-us/intune/intune-graph-apis#intune-permission-scopes
 * Install the AzureAD PowerShell module by running 'Install-Module AzureAD' or 'Install-Module AzureADPreview' from an elevated PowerShell prompt
 * An Intune tenant which supports the Azure Portal with a production or trial license (https://docs.microsoft.com/en-us/intune-azure/introduction/what-is-microsoft-intune)
 * Using the Microsoft Graph APIs to configure Intune controls and policies requires an Intune license.
