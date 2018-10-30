@@ -17,6 +17,7 @@ This is particularly useful if a user has been deleted from AAD without first de
 * PowerShell v5.0 on Windows 10 x64 (PowerShell v4.0 is a minimum requirement for the scripts to function correctly)
 Note: For PowerShell 4.0 you will require the PowershellGet Module for PS 4.0 to enable the usage of the Install-Module functionality
 First time usage of these scripts requires a Global Administrator of the Tenant to accept the permissions of the application
+* If you receive an error that scripts are disabled on your machine, you will need to allow the script to run by running the Set-ExecutionPolicy cmdlet. For more information: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-6
 
 ## Getting Started
 After the prerequisites are installed or met, perform the following steps to use the script:
