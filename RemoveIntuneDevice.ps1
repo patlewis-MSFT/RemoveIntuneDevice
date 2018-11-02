@@ -120,6 +120,7 @@ function Get-AuthToken
         Write-Host ""
         break
     }
+
 }
 
 ####################################################
@@ -209,6 +210,48 @@ Function Get-DeletedAADUser()
         [Parameter(Mandatory = $true)]
         $deletedUserPrincipalName
     )
+
+
+    Write-Host "Checking for MSOnline module..."
+
+    $MSOLModule = Get-Module -Name "MSOnline" -ListAvailable
+
+    if ($null -eq $MSOLModule)
+    {
+        Write-Host ""
+        Write-Host "MSOnline PowerShell module not found"
+        Write-Host "Install by running 'Install-Module MSOnline' from an elevated PowerShell prompt"
+        Write-Host "Script can't continue..."
+        Write-Host ""
+        exit
+    }
+
+    # Getting path to MSOnline Assemblies
+    # If the module count is greater than 1 find the latest version
+
+    if ($MSOLModule.count -gt 1)
+    {
+        $Latest_Version = ($MSOLModule | Select-Object version | Sort-Object)[-1]
+        $MSOLModule = $MSOLModule | Where-Object { $_.version -eq $Latest_Version.version }
+
+        # Checking if there are multiple versions of the same module found
+        if ($MSOLModule.count -gt 1)
+        {
+            $MSOLModule = $MSOLModule | Select-Object -Unique
+        }
+
+        $MSOL = Join-Path $MSOLModule.ModuleBase "Microsoft.Online.Administration.Automation.PSModule.dll"
+        $MSOLRes = Join-Path $MSOLModule.ModuleBase "Microsoft.Online.Administration.Automation.PSModule.Resources.dll"
+    }
+    else
+    {
+        $MSOL = Join-Path $MSOLModule.ModuleBase "Microsoft.Online.Administration.Automation.PSModule.dll"
+        $MSOLRes = Join-Path $MSOLModule.ModuleBase "Microsoft.Online.Administration.Automation.PSModule.Resources.dll"
+    }
+
+    [System.Reflection.Assembly]::LoadFrom($MSOL) | Out-Null
+    [System.Reflection.Assembly]::LoadFrom($MSOLRes) | Out-Null
+
 
     try
     {
@@ -556,6 +599,9 @@ NAME: Invoke-DeviceAction
 ####################################################
 # Start main                                       #
 ####################################################
+# Version 1.0.1
+####################################################
+
 $global:graphApiVersion = "beta"
 $global:UserIsDeleted = $false
 
@@ -577,7 +623,9 @@ if ($global:authToken)
         $global:MyCreds = Get-Credential -Message 'Enter specify UPN for Azure authentication:'
         $global:authToken = Get-AuthToken -User $global:MyCreds.UserName
     }
-} else {
+}
+else
+{
     # Authentication doesn't exist, calling Get-AuthToken function
     if (($null -eq $User) -or ($User -eq ""))
     {
@@ -610,7 +658,9 @@ if ($true -eq $global:UserIsDeleted)
 {
     $DeletedDevices = Get-AADAllDevice
     $Devices = $DeletedDevices | Where-Object {$_.usersLoggedOn.userId -eq $global:UserId.Guid}
-} else {
+}
+else
+{
     #Get devices for user using graph
     $Devices = Get-AADUserDevice($User.id)
 }
@@ -651,12 +701,16 @@ if ($Devices)
             $SelectedDeviceId = $SelectedDevice | Select-Object -ExpandProperty id
             Write-Host "User $($User.userPrincipalName) has device $($SelectedDevice.deviceName)"
         }
-    } elseif ($DeviceCount -eq 1) {
+    }
+    elseif ($DeviceCount -eq 1)
+    {
         $SelectedDevice = $Devices
         $SelectedDeviceId = $SelectedDevice | Select-Object -ExpandProperty id
         Write-Host "User $($User.userPrincipalName) has one device $($SelectedDevice.deviceName)"
     }
-} else {
+}
+else
+{
     Write-Host "No devices found for UPN." -ForegroundColor Red
     Write-Host ""
     exit
