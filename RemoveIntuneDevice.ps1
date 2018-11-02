@@ -370,7 +370,21 @@ Function Get-AADAllDevice()
     try
     {
         $uri = "https://graph.microsoft.com/$global:graphApiVersion/$($Resource)"
-        (Invoke-RestMethod -Uri $uri -Headers $global:authToken -Method Get).Value
+        #(Invoke-RestMethod -Uri $uri -Headers $global:authToken -Method Get).Value
+
+        $DevicesResponse = (Invoke-RestMethod -Uri $uri -Headers $global:authToken -Method Get)
+        $Devices = $DevicesResponse.value
+        $DevicesNextLink = $DevicesResponse."@odata.nextLink"
+
+        while ($DevicesNextLink -ne $null){
+
+            $DevicesResponse = (Invoke-RestMethod -Uri $DevicesNextLink -Headers $authToken -Method Get)
+            $DevicesNextLink = $DevicesResponse."@odata.nextLink"
+            $Devices += $DevicesResponse.value
+
+        }
+
+        return $Devices
     }
     catch
     {
@@ -382,7 +396,7 @@ Function Get-AADAllDevice()
         $responseBody = $reader.ReadToEnd();
         Write-Host "Response content:`n$responseBody" -f Red
         Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
-        Write-Host ""
+        write-host
         break
     }
 }
@@ -599,7 +613,7 @@ NAME: Invoke-DeviceAction
 ####################################################
 # Start main                                       #
 ####################################################
-# Version 1.0.1
+# Version 1.0.4
 ####################################################
 
 $global:graphApiVersion = "beta"
@@ -657,7 +671,7 @@ Write-Host "Checking if the user $($User.UserPrincipalName) has any devices assi
 if ($true -eq $global:UserIsDeleted)
 {
     $DeletedDevices = Get-AADAllDevice
-    $Devices = $DeletedDevices | Where-Object {$_.usersLoggedOn.userId -eq $global:UserId.Guid}
+    $Devices = $DeletedDevices | Where-Object {$_.usersLoggedOn.userId -eq $User.ObjectId}
 }
 else
 {
@@ -700,6 +714,9 @@ if ($Devices)
             $SelectedDevice = $Devices | Where-Object { $_.deviceName -eq "$Selection" }
             $SelectedDeviceId = $SelectedDevice | Select-Object -ExpandProperty id
             Write-Host "User $($User.userPrincipalName) has device $($SelectedDevice.deviceName)"
+        } else {
+            Write-Host "No device chosen. Exiting" -ForegroundColor Yellow
+            exit
         }
     }
     elseif ($DeviceCount -eq 1)
