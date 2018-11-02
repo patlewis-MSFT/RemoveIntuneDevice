@@ -1,7 +1,7 @@
 # RemoveIntuneDevice
 Removes a device even if the user has been deleted
 
-Version 1.0.0
+Version 1.0.1
 
 The RemoveIntuneDevice.ps1 script enables you to retire and delete a device owned by the specified UPN. 
 
@@ -9,6 +9,7 @@ This is particularly useful if a user has been deleted from AAD without first de
 
 ## Prerequisites
 * The Azure Active Directory recycle bin must be enabled before deleting a device from a deleted user: https://docs.microsoft.com/en-us/azure/active-directory/hybrid/how-to-connect-sync-recycle-bin
+* If the user is deleted the MSOnline module must be installed: https://docs.microsoft.com/en-us/powershell/azure/active-directory/overview?view=azureadps-1.0. Run 'Install-Module MSOnline'
 * The logged on user must have the appropriate Graph permissions setup in Intune prior to running the script: https://docs.microsoft.com/en-us/intune/intune-graph-apis#intune-permission-scopes
 * Install the AzureAD PowerShell module by running 'Install-Module AzureAD' or 'Install-Module AzureADPreview' from an elevated PowerShell prompt
 * An Intune tenant which supports the Azure Portal with a production or trial license (https://docs.microsoft.com/en-us/intune-azure/introduction/what-is-microsoft-intune)
