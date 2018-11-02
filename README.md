@@ -1,7 +1,7 @@
 # RemoveIntuneDevice
 Removes a device even if the user has been deleted
 
-Version 1.0.1
+Version 1.0.4
 
 The RemoveIntuneDevice.ps1 script enables you to retire and delete a device owned by the specified UPN. 
 
