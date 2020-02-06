@@ -27,3 +27,7 @@ After the prerequisites are installed or met, perform the following steps to use
 1. Browse to the directory where you copied RemoveIntuneDevice.ps1
    * Type: **.\RemoveIntuneDevice.ps1**
 1. Follow the prompts for authentication and for the UPN of the owner or previous owner's device
+
+## Support
+Report any issues or problems using the "Issues" tab. 
+Support for this product is not offered by Microsoft Support.
